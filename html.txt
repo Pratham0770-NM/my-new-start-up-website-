@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Bear Bed — Comfort Sleepwear</title>
+
+  <!-- Font Awesome for icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg1: #f4f7ff;
+      --card: #ffffff;
+      --accent: #D2691E;
+      --accent-2: #b35917;
+      --primary: #1f2d3d;
+      --muted: #6b7280;
+      --glass: rgba(255,255,255,0.7);
+    }
+    * { box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: linear-gradient(180deg,#eef3ff 0%, #fbfbff 100%);
+      color:var(--primary);
+      -webkit-font-smoothing:antialiased;
+    }
+
+    /* Header */
+    header{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(6px);
+      background: linear-gradient(180deg, rgba(255,255,255,0.8), rgba(255,255,255,0.6));
+      border-bottom:1px solid rgba(20,30,60,0.04);
+      padding:14px 18px;
+    }
+    .container{
+      max-width:1200px; margin:0 auto; display:flex; gap:16px; align-items:center;
+    }
+    .brand{ display:flex; gap:12px; align-items:center; text-decoration:none; color:var(--primary) }
+    .brand i{ color:var(--accent); font-size:28px }
+    .brand h1{ font-size:18px; margin:0 }
+    .header-right{ margin-left:auto; display:flex; gap:12px; align-items:center }
+
+    .search input{
+      padding:10px 14px; border-radius:999px; width:360px; max-width:40vw;
+      border:1px solid #e7ecf8; background:white;
+    }
+
+    /* Main layout */
+    main.site{
+      max-width:1200px; margin:22px auto; display:grid;
+      grid-template-columns: 260px 1fr 340px; gap:18px; align-items:start; padding:0 18px;
+    }
+
+    /* Sidebar */
+    aside.sidebar{
+      background:var(--card); border-radius:12px; padding:16px; box-shadow: 0 8px 28px rgba(30,40,80,0.04);
+    }
+    .sidebar h3{ margin:0 0 10px 0; font-size:15px }
+    .cats { display:flex; flex-direction:column; gap:8px }
+    .cat-btn{
+      padding:10px 12px; border-radius:10px; border:1px solid transparent;
+      background:transparent; text-align:left; cursor:pointer; color:var(--primary);
+    }
+    .cat-btn.active{ background: linear-gradient(90deg,#fff7f0,#fffaf6); border-color:#ffedd5; box-shadow:0 6px 18px rgba(210,105,30,0.06) }
+
+    .chip { padding:8px 10px; border-radius:999px; border:1px solid #eef2ff; background:var(--card); cursor:pointer; font-size:13px; }
+    .chip.active{ background:linear-gradient(90deg,#fff8f0,#fffef9); border-color:#ffd8a8; }
+
+    /* Product area */
+    section.products { min-height:200px }
+    .toolbar{ display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; gap:10px }
+    .filters { display:flex; gap:8px; align-items:center; flex-wrap:wrap }
+    .grid{
+      display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:14px;
+    }
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,0.98), var(--card));
+      border-radius:12px; overflow:hidden; display:flex; flex-direction:column;
+      box-shadow: 0 12px 30px rgba(18,24,50,0.04); transition: transform .18s ease, box-shadow .18s ease;
+    }
+    .card:hover{ transform: translateY(-6px); box-shadow: 0 20px 40px rgba(18,24,50,0.07); }
+
+    .card img{ width:100%; height:170px; object-fit:cover; display:block; }
+    .card-body{ padding:12px 14px; display:flex; flex-direction:column; gap:8px; flex:1 }
+    .card-title{ font-weight:700; font-size:15px }
+    .card-meta{ color:var(--muted); font-size:13px }
+    .price-row{ display:flex; justify-content:space-between; align-items:center; margin-top:auto; gap:8px }
+    .price{ color:var(--accent); font-weight:800 }
+    .add-row{ display:flex; gap:8px; align-items:center }
+    .size-select{ padding:6px 8px; border-radius:8px; border:1px solid #e8eef8; background:white; }
+    .btn-add{ padding:8px 10px; background:var(--accent); color:white; border:0; border-radius:8px; cursor:pointer }
+
+    /* Cart panel */
+    aside.cart{ background:linear-gradient(180deg,#fff,#fffaf6); border-radius:12px; padding:14px; box-shadow:0 10px 30px rgba(20,30,80,0.04) }
+    .cart h3{ margin:0 0 8px 0 }
+    .cart-list{ display:flex; flex-direction:column; gap:10px; margin-top:8px }
+    .cart-item{ display:flex; gap:10px; align-items:center; background:white; padding:8px; border-radius:10px; border:1px solid #f1f4fb }
+    .cart-item img{ width:64px; height:64px; object-fit:cover; border-radius:8px }
+    .cart-item .meta{ flex:1 }
+    .qty{ display:flex; gap:8px; align-items:center }
+    .qty button{ padding:6px 8px; border-radius:8px; border:1px solid #e6eaf6; background:white; cursor:pointer }
+
+    /* Floating chat button */
+    .chat-fab{
+      position:fixed; right:20px; bottom:20px; z-index:100;
+      width:58px; height:58px; border-radius:999px; background:var(--accent);
+      display:flex; align-items:center; justify-content:center; color:white; cursor:pointer;
+      box-shadow: 0 12px 30px rgba(210,105,30,0.2);
+    }
+
+    /* chat window */
+    .chat-window{
+      position:fixed; right:20px; bottom:88px; z-index:110; width:360px; max-width:92%;
+      background:linear-gradient(180deg,#ffffff,#fbfbff); border-radius:12px; box-shadow:0 18px 40px rgba(12,20,50,0.12);
+      overflow:hidden; display:flex; flex-direction:column;
+    }
+    .chat-header{ padding:10px 12px; display:flex; align-items:center; gap:8px; border-bottom:1px solid #f1f4fb; }
+    .chat-messages{ padding:10px; max-height:280px; overflow:auto; display:flex; flex-direction:column; gap:8px; background:linear-gradient(180deg,#fbfcff,#ffffff); }
+    .msg{ padding:8px 10px; border-radius:10px; max-width:85%; font-size:14px; line-height:1.3 }
+    .msg.bot{ background:#eef6ff; align-self:flex-start; color:var(--primary) }
+    .msg.user{ background:#fff3e6; align-self:flex-end; color:var(--primary) }
+    .chat-footer{ padding:10px; display:flex; gap:8px; align-items:center; border-top:1px solid #f1f4fb }
+    .lang-select{ padding:6px 8px; border-radius:8px; border:1px solid #eef2ff; background:white }
+
+    /* responsive */
+    @media (max-width: 1024px){
+      main.site{ grid-template-columns: 200px 1fr; }
+      aside.cart{ display:none; }
+    }
+    @media (max-width:700px){
+      header .container{ flex-direction:column; gap:10px; align-items:flex-start }
+      main.site{ grid-template-columns: 1fr; padding:0 12px; }
+      .chat-window{ right:12px; left:12px; bottom:78px; width:auto }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a class="brand" href="/">
+        <i class="fas fa-bed"></i>
+        <div>
+          <h1>Bear Bed</h1>
+          <div style="font-size:12px;color:var(--muted)">Comfort Sleepwear</div>
+        </div>
+      </a>
+
+      <div style="flex:1; margin:0 18px;">
+        <div class="search">
+          <input id="siteSearch" placeholder="Search T-Shirts, Shirts, Pants, Shorts..." />
+        </div>
+      </div>
+
+      <div class="header-right">
+        <button id="openCartBtn" class="cart-btn" style="background:var(--accent); color:white; padding:10px 12px; border-radius:10px; border:0; cursor:pointer;">
+          <i class="fas fa-shopping-cart"></i>&nbsp;<span id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="site">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <h3>Categories</h3>
+      <div class="cats">
+        <button class="cat-btn active" data-cat="A">Category A <small style="color:var(--muted)">Clothes</small></button>
+      </div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f5ff">
+
+      <h3>Types</h3>
+      <div style="display:flex;flex-direction:column;gap:8px;margin-top:8px">
+        <button class="chip type-filter" data-type="T-Shirt">T-Shirts</button>
+        <button class="chip type-filter" data-type="Shirt">Shirts</button>
+        <button class="chip type-filter" data-type="Pants">Pants</button>
+        <button class="chip type-filter" data-type="Shorts">Shorts</button>
+      </div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f5ff">
+
+      <h3>Sizes</h3>
+      <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+        <button class="chip size-filter" data-size="S">S</button>
+        <button class="chip size-filter" data-size="M">M</button>
+        <button class="chip size-filter" data-size="L">L</button>
+        <button class="chip size-filter" data-size="XL">XL</button>
+      </div>
+
+      <hr style="margin:12px 0;border:none;border-top:1px solid #f1f5ff">
+
+      <h3>Quick Tips</h3>
+      <p style="color:var(--muted); font-size:13px">Pick a type and size, then Add. Click the cart button to view cart and checkout. Press the chat button to ask BearBot in English or Kannada.</p>
+    </aside>
+
+    <!-- Products -->
+    <section class="products">
+      <div class="toolbar">
+        <div class="filters">
+          <button class="chip" id="clearFilters">Clear filters</button>
+          <div style="font-size:13px;color:var(--muted)"> &nbsp;</div>
+        </div>
+        <div style="color:var(--muted)">Showing <span id="resultCount">0</span> items</div>
+      </div>
+
+      <div class="grid" id="productGrid"></div>
+    </section>
+
+    <!-- Cart + AI column -->
+    <aside>
+      <div class="cart" id="cartPanel">
+        <h3>Cart</h3>
+        <div class="cart-list" id="cartList"><div style="color:var(--muted)">Your cart is empty.</div></div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">
+          <div style="font-weight:800">Total: ₹<span id="cartTotal">0</span></div>
+          <button id="checkoutBtn" style="background:var(--accent); color:white; border:0; padding:10px 12px; border-radius:8px; cursor:pointer">Checkout</button>
+        </div>
+      </div>
+    </aside>
+  </main>
+
+  <!-- Footer -->
+  <footer style="padding:18px 0; text-align:center; color:var(--muted)">
+    © 2025 Bear Bed — Updates on GitHub daily.
+  </footer>
+
+  <!-- Floating chat button -->
+  <div class="chat-fab" id="chatFab" title="Chat with BearBot">
+    <i class="fas fa-comment-dots" style="font-size:18px"></i>
+  </div>
+
+  <!-- Chat window (hidden initially) -->
+  <div class="chat-window" id="chatWindow" style="display:none">
+    <div class="chat-header">
+      <div style="display:flex;flex-direction:column">
+        <strong>BearBot</strong>
+        <small style="color:var(--muted); font-size:12px">Your shopping assistant</small>
+      </div>
+      <div style="margin-left:auto; display:flex; gap:8px; align-items:center">
+        <select id="langSelect" class="lang-select" title="Select language">
+          <option value="en">English</option>
+          <option value="kn">ಕನ್ನಡ</option>
+        </select>
+        <button id="closeChat" style="border:0;background:transparent;cursor:pointer;font-size:16px;color:var(--muted)"><i class="fas fa-times"></i></button>
+      </div>
+    </div>
+
+    <div class="chat-messages" id="chatMessages">
+      <div class="msg bot" data-role="bot">Hi — I'm BearBot. Ask me about sizes, how to shop, shipping or returns. You can choose English or Kannada above.</div>
+    </div>
+
+    <div class="chat-footer">
+      <input id="chatInput" placeholder="Type your question (eg: how to shop)" style="flex:1;padding:8px 10px;border-radius:8px;border:1px solid #eef2ff" />
+      <button id="sendChat" style="background:var(--accent); color:white; border:0; padding:8px 10px; border-radius:8px; cursor:pointer">Send</button>
+    </div>
+  </div>
+
+  <!-- product template -->
+  <template id="productTpl">
+    <div class="card">
+      <img src="" alt="product">
+      <div class="card-body">
+        <div class="card-title"></div>
+        <div class="card-meta"></div>
+        <div class="price-row">
+          <div class="price"></div>
+          <div class="add-row">
+            <select class="size-select"></select>
+            <button class="btn-add">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    /*******************************
+     * NEW FRONTEND LOGIC
+     *******************************/
+
+    // Use your uploaded file path for one product image (developer instruction)
+    const localUploadedImage = "/mnt/data/6430e126-66ac-4d65-bac9-f1f18bb64dde.png";
+
+    // high-quality sample images (Unsplash)
+    const sampleImages = [
+      "https://images.unsplash.com/photo-1520975911220-6e2c3f8d3d66?auto=format&fit=crop&w=1200&q=80", // t-shirt
+      "https://images.unsplash.com/photo-1520975698513-1e3d9b1b7b24?auto=format&fit=crop&w=1200&q=80", // shirt
+      "https://images.unsplash.com/photo-1541099649105-f69ad21f3246?auto=format&fit=crop&w=1200&q=80", // pants
+      "https://images.unsplash.com/photo-1520975686316-0b9b9b9b5d3f?auto=format&fit=crop&w=1200&q=80"  // shorts
+    ];
+
+    // Demo products (Category A only). Mix of sample images + local uploaded image for one
+    const demoProducts = [
+      { id: 1, category: 'A', type: 'T-Shirt', name: 'Classic Cotton T-Shirt', price: 399, sizes: ['S','M','L','XL'], image: sampleImages[0], description: 'Soft cotton tee for comfortable nights.' },
+      { id: 2, category: 'A', type: 'T-Shirt', name: 'Striped Night Tee', price: 449, sizes: ['S','M','L','XL'], image: sampleImages[0], description: 'Stylish stripes and breathable fabric.' },
+      { id: 3, category: 'A', type: 'Shirt', name: 'Relaxed Sleep Shirt', price: 799, sizes: ['M','L','XL'], image: sampleImages[1], description: 'Relaxed fit for lounging.' },
+      { id: 4, category: 'A', type: 'Pants', name: 'Comfort Sleep Pants', price: 699, sizes: ['S','M','L','XL'], image: sampleImages[2], description: 'Elastic waist and soft fabric.' },
+      { id: 5, category: 'A', type: 'Shorts', name: 'Breezy Night Shorts', price: 349, sizes: ['S','M','L'], image: sampleImages[3], description: 'Lightweight for warm nights.' },
+      // add one product using user's uploaded image
+      { id: 6, category: 'A', type: 'T-Shirt', name: 'Local Sample Tee', price: 499, sizes: ['S','M','L','XL'], image: localUploadedImage, description: 'Demo product uses your uploaded image.' }
+    ];
+
+    let products = []; // actual store
+    let activeCategory = 'A';
+    let activeTypes = new Set();
+    let activeSizes = new Set();
+    let cart = [];
+
+    // DOM refs
+    const productGrid = document.getElementById('productGrid');
+    const resultCount = document.getElementById('resultCount');
+    const cartList = document.getElementById('cartList');
+    const cartTotalEl = document.getElementById('cartTotal');
+    const cartCountEl = document.getElementById('cartCount');
+
+    // Load products (try backend, fallback demo)
+    async function loadProducts(){
+      try{
+        const resp = await fetch('/api/products', {cache:'no-store'});
+        if(!resp.ok) throw new Error('no api');
+        const data = await resp.json();
+        products = data.map(d=>({
+          id: d.id,
+          category: d.category || 'A',
+          type: d.type || d.category || 'T-Shirt',
+          name: d.name,
+          price: Number(d.price),
+          sizes: d.sizes ? (Array.isArray(d.sizes) ? d.sizes : d.sizes.split(',').map(s=>s.trim())) : ['S','M','L','XL'],
+          image: d.image || sampleImages[0],
+          description: d.description || ''
+        }));
+      }catch(e){
+        products = demoProducts;
+      }
+      renderProducts();
+    }
+
+    // render products based on filters
+    function renderProducts(){
+      productGrid.innerHTML = '';
+      const q = document.getElementById('siteSearch').value.trim().toLowerCase();
+      const filtered = products.filter(p=>{
+        if(p.category !== activeCategory) return false;
+        if(activeTypes.size && !activeTypes.has(p.type)) return false;
+        if(activeSizes.size){
+          const ok = p.sizes.some(sz => activeSizes.has(sz));
+          if(!ok) return false;
+        }
+        if(q && !(p.name.toLowerCase().includes(q) || (p.description && p.description.toLowerCase().includes(q)))) return false;
+        return true;
+      });
+
+      resultCount.textContent = filtered.length;
+
+      if(!filtered.length){
+        productGrid.innerHTML = `<div style="grid-column:1/-1;padding:20px;color:var(--muted);background:var(--card);border-radius:10px">No products found</div>`;
+        return;
+      }
+
+      const tpl = document.getElementById('productTpl');
+
+      filtered.forEach(p=>{
+        const node = tpl.content.cloneNode(true);
+        const img = node.querySelector('img');
+        const title = node.querySelector('.card-title');
+        const meta = node.querySelector('.card-meta');
+        const price = node.querySelector('.price');
+        const sizeSelect = node.querySelector('.size-select');
+        const addBtn = node.querySelector('.btn-add');
+
+        img.src = p.image;
+        img.alt = p.name;
+        title.textContent = p.name;
+        meta.textContent = p.type + (p.description ? ' • ' + p.description : '');
+        price.textContent = '₹' + p.price.toLocaleString();
+
+        // sizes populate
+        sizeSelect.innerHTML = '';
+        p.sizes.forEach(s=>{
+          const op = document.createElement('option'); op.value = s; op.textContent = s; sizeSelect.appendChild(op);
+        });
+
+        addBtn.addEventListener('click', ()=> addToCart(p.id, sizeSelect.value));
+        productGrid.appendChild(node);
+      });
+    }
+
+    // filters: type buttons
+    document.querySelectorAll('.type-filter').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const t = btn.dataset.type;
+        if(activeTypes.has(t)){ activeTypes.delete(t); btn.classList.remove('active'); }
+        else { activeTypes.add(t); btn.classList.add('active'); }
+        renderProducts();
+      });
+    });
+
+    // size filters
+    document.querySelectorAll('.size-filter').forEach(btn=>{
+      btn.addEventListener('click', ()=>{
+        const s = btn.dataset.size;
+        if(activeSizes.has(s)){ activeSizes.delete(s); btn.classList.remove('active'); }
+        else{ activeSizes.add(s); btn.classList.add('active'); }
+        renderProducts();
+      });
+    });
+
+    // search
+    document.getElementById('siteSearch').addEventListener('input', ()=> renderProducts());
+    document.getElementById('clearFilters').addEventListener('click', ()=>{
+      activeSizes.clear(); activeTypes.clear();
+      document.querySelectorAll('.size-filter, .type-filter').forEach(b=>b.classList.remove('active'));
+      document.getElementById('siteSearch').value='';
+      renderProducts();
+    });
+
+    // CART: localStorage
+    function loadCart(){
+      try{
+        const raw = localStorage.getItem('bearbed_cart_v2');
+        cart = raw ? JSON.parse(raw) : [];
+      }catch(e){ cart = []; }
+      renderCart();
+    }
+    function saveCart(){ localStorage.setItem('bearbed_cart_v2', JSON.stringify(cart)); }
+    function addToCart(pid, size){
+      const p = products.find(x=>x.id==pid);
+      if(!p) return alert('Product not found');
+      const key = `${pid}::${size}`;
+      const existing = cart.find(c=>c.key===key);
+      if(existing) existing.qty += 1; else cart.push({key, id: pid, size, qty: 1, product: p});
+      saveCart(); renderCart();
+      // visual hint
+      document.getElementById('openCartBtn').animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:220});
+    }
+    function changeQty(key, delta){
+      const it = cart.find(c=>c.key===key); if(!it) return;
+      it.qty += delta;
+      if(it.qty<=0) cart = cart.filter(c=>c.key!==key);
+      saveCart(); renderCart();
+    }
+    function removeFromCart(key){ cart = cart.filter(c=>c.key!==key); saveCart(); renderCart(); }
+
+    function renderCart(){
+      cartList.innerHTML = '';
+      if(!cart.length){ cartList.innerHTML = '<div style="color:var(--muted)">Your cart is empty.</div>'; cartTotalEl.textContent='0'; cartCountEl.textContent='0'; return; }
+      let total = 0;
+      cart.forEach(item=>{
+        total += item.product.price*item.qty;
+        const el = document.createElement('div'); el.className='cart-item';
+        el.innerHTML = `
+          <img src="${item.product.image}" alt="${item.product.name}">
+          <div class="meta">
+            <div style="font-weight:700">${item.product.name}</div>
+            <div style="color:var(--muted);font-size:13px">Size: ${item.size} • ₹${item.product.price}</div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
+            <div class="qty">
+              <button data-key="${item.key}" class="dec">-</button>
+              <div style="min-width:24px;text-align:center">${item.qty}</div>
+              <button data-key="${item.key}" class="inc">+</button>
+            </div>
+            <button data-key="${item.key}" class="remove" style="font-size:12px;color:${'var(--accent-2)'};background:transparent;border:0;cursor:pointer">Remove</button>
+          </div>
+        `;
+        cartList.appendChild(el);
+      });
+      cartTotalEl.textContent = total;
+      cartCountEl.textContent = cart.reduce((s,i)=>s+i.qty,0);
+
+      cartList.querySelectorAll('.inc').forEach(b=> b.addEventListener('click', ()=> changeQty(b.dataset.key, +1)));
+      cartList.querySelectorAll('.dec').forEach(b=> b.addEventListener('click', ()=> changeQty(b.dataset.key, -1)));
+      cartList.querySelectorAll('.remove').forEach(b=> b.addEventListener('click', ()=> removeFromCart(b.dataset.key)));
+    }
+
+    // checkout (simulate or send to backend)
+    document.getElementById('checkoutBtn').addEventListener('click', ()=>{
+      if(!cart.length) return alert('Cart is empty');
+      const name = prompt('Full name'); if(!name) return;
+      const phone = prompt('Phone number'); if(!phone) return;
+      const addr = prompt('Delivery address'); if(!addr) return;
+
+      const summary = cart.map(i=> `${i.product.name} ×${i.qty} (${i.size}) - ₹${i.product.price*i.qty}`).join('\n');
+      const total = cart.reduce((s,i)=>s+i.product.price*i.qty,0);
+      // Try to place order via backend (single-item simplified)
+      (async ()=>{
+        try{
+          const res = await fetch('/api/place_order', {
+            method:'POST', headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+              product_id: cart[0].id,
+              customer_name: name,
+              customer_phone: phone,
+              customer_address: addr,
+              quantity: cart.reduce((s,i)=>s+i.qty,0),
+              size: cart[0].size
+            })
+          });
+          if(res.ok){
+            const r = await res.json();
+            alert('Order placed! ID: ' + (r.order_id || '(id)') + '\nTotal: ₹' + total);
+          } else {
+            alert('Order placed locally. Total: ₹' + total);
+          }
+        }catch(e){
+          alert('Order placed locally. Total: ₹' + total);
+        } finally {
+          cart = []; saveCart(); renderCart();
+        }
+      })();
+    });
+
+    // open cart button scroll/pulse
+    document.getElementById('openCartBtn').addEventListener('click', ()=>{
+      const cartEl = document.getElementById('cartPanel');
+      cartEl.scrollIntoView({behavior:'smooth', block:'center'});
+    });
+
+    // Floating chat logic
+    const chatFab = document.getElementById('chatFab');
+    const chatWindow = document.getElementById('chatWindow');
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendChatBtn = document.getElementById('sendChat');
+    const closeChatBtn = document.getElementById('closeChat');
+    const langSelect = document.getElementById('langSelect');
+
+    chatFab.addEventListener('click', ()=> {
+      chatWindow.style.display = 'flex';
+      chatFab.style.display = 'none';
+      chatInput.focus();
+    });
+    closeChatBtn.addEventListener('click', ()=> {
+      chatWindow.style.display = 'none';
+      chatFab.style.display = 'flex';
+    });
+
+    function appendChat(text, role='bot'){
+      const d = document.createElement('div'); d.className = 'msg ' + (role==='bot' ? 'bot' : 'user');
+      d.textContent = text; chatMessages.appendChild(d); chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    // Bilingual responses: English (en) and Kannada (kn)
+    function aiReply(enText, knText){
+      const lang = langSelect.value || 'en';
+      if(lang === 'kn') appendChat(knText || enText, 'bot');
+      else appendChat(enText, 'bot');
+    }
+
+    // rule-based AI handler
+    function handleAiQuery(qRaw){
+      const q = (qRaw||'').trim().toLowerCase();
+      if(!q) return;
+      appendChat(qRaw, 'user');
+
+      setTimeout(()=>{
+        if(q.includes('how to shop') || q.includes('how do i shop') || q.includes('how to buy')){
+          aiReply(
+            'Steps: 1) Choose a Type (T-Shirt, Shirt, Pants, Shorts). 2) Select a Size. 3) Click Add. 4) Open Cart and Checkout.',
+            'ಹಂತಗಳು: 1) ಟೈಪ್ ಆಯ್ಕೆ ಮಾಡಿ (T-Shirt, Shirt, Pants, Shorts). 2) ಗಾತ್ರ ಆಯ್ಕೆ ಮಾಡಿ. 3) Add ಕ್ಲಿಕ್ ಮಾಡಿ. 4) ಕಾರ್ಟ್ ತೆರೆಯಿ ಮತ್ತು Checkout ಮಾಡಿ.'
+          );
+        } else if(q.includes('size') || q.includes('what size') || q.includes('size guide')){
+          aiReply(
+            'Size guide — S: Small (34-36 in), M: Medium (38-40 in), L: Large (42-44 in), XL: Extra Large (46-48 in). For loose fit choose +1 size.',
+            'ಗಾತ್ರ ಮಾರ್ಗದರ್ಶಿ — S: ಸ್ಮಾಲ್ (34-36 ಇಂಚು), M: ಮೆಡಿಯಂ (38-40 ಇಂಚು), L: ಲಾರ್ಜ್ (42-44 ಇಂಚು), XL: ಎಕ್ಸ್ಟ್ರಾ ಲಾರ್ಜ್ (46-48 ಇಂಚು). ಆರಾಮದಾಯಕ ಆಕಾರಕ್ಕಾಗಿ ಒಂದು ಗಾತ್ರ ಹೆಚ್ಚಿಸಿಕೊಳ್ಳಿ.'
+          );
+        } else if(q.includes('returns') || q.includes('return')){
+          aiReply(
+            'Returns: We accept returns within 7 days of delivery for unworn items. Contact: info@bearbed.com',
+            'ರಿಟರ್ನ್ಸ್: ವೀಕ್ಷಿಸಲಾಗದ ವಸ್ತುಗಳಿಗೆ ವಿತರಣೆಯ ನಂತರ 7 ದಿನಗಳಲ್ಲಿ ರಿಟರ್ನ್ ಸ್ವೀಕರಿಸಲಾಗುತ್ತದೆ. ಸಂಪರ್ಕಿಸಿ: info@bearbed.com'
+          );
+        } else if(q.includes('shipping') || q.includes('delivery')){
+          aiReply(
+            'Shipping: Standard shipping 3-7 business days. You will provide address at checkout.',
+            'ಶಿಪ್ಪಿಂಗ್: ಸಾಮಾನ್ಯ ಶಿಪ್ಪಿಂಗ್ 3-7 ವ್ಯವಹಾರ ದಿನಗಳು. ವಿಳಾಸವನ್ನು checkout ಸಮಯದಲ್ಲಿ ನೀಡಬಹುದು.'
+          );
+        } else if(q.includes('recommend') || q.includes('suggest')){
+          aiReply(
+            'I recommend the Classic Cotton T-Shirt for daily comfort, and Comfort Sleep Pants for best sleep. Want me to add any to cart?',
+            'ನಾನು առաջարկಿಸುತ್ತೇನೆ: Classic Cotton T-Shirt ದೈನಂದಿನ ಆರಾಮಕ್ಕೆ ಮತ್ತು Comfort Sleep Pants ಉತ್ತಮ ನಿದ್ರೆಗೆ. ನಾನು ಯಾವುದನ್ನಾದರೂ ಕಾರ್ಟ್‌ಗೆ ಸೇರಿಸಬಹುದುವೇ?'
+          );
+        } else if(q.startsWith('pick size for ')){
+          const name = q.replace('pick size for ','').trim();
+          const p = products.find(x=>x.name.toLowerCase().includes(name));
+          if(p){
+            const suggested = p.sizes.includes('M') ? 'M' : p.sizes[0];
+            aiReply(
+              `For ${p.name} I suggest size ${suggested}. Choose +1 size for loose fit.`,
+              `${p.name} ಗಾಗಿ ನಾನು ${suggested} ಗಾತ್ರವನ್ನು ಶಿಫಾರಸು ಮಾಡುತ್ತೇನೆ. ಸಂಪೂರ್ಣ ಆರಾಮಕ್ಕಾಗಿ ಒಂದು ಗಾತ್ರದಷ್ಟು ಹೆಚ್ಚಿಸಿ.`
+            );
+          } else {
+            aiReply('I could not find that product. Try a shorter name.', 'ನಾನು ಆ ಉತ್ಪನ್ನವನ್ನು ಕಂಡು ಹಿಡಿಯಲಿಲ್ಲ. ಚುಟುಕು ಹೆಸರು ಪ್ರಯತ್ನಿಸಿ.');
+          }
+        } else {
+          aiReply(
+            'Sorry — I did not understand exactly. Try: "how to shop", "size guide", "shipping", "returns", "recommend".',
+            'ಕ್ಷಮಿಸಿ — ನನಗೆ ಸ್ಪಷ್ಟವಾಗಿ ಅರ್ಥವಾಗಲಿಲ್ಲ. ಪ್ರಯತ್ನಿಸಿ: "how to shop", "size guide", "shipping", "returns", "recommend".'
+          );
+        }
+      }, 450);
+    }
+
+    sendChatBtn.addEventListener('click', ()=>{ handleAiQuery(chatInput.value); chatInput.value=''; });
+    chatInput.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ handleAiQuery(chatInput.value); chatInput.value=''; } });
+
+    // initial product load and cart
+    (async ()=>{ await loadProducts(); loadCart(); })();
+
+    // expose debug for console
+    window._bear = { products, cart, addToCart, renderCart, loadProducts };
+  </script>
+
+</body>
+</html>
